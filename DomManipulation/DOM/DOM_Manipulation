@@ -1,0 +1,192 @@
+DOM Manipulation Overview:
+DOM manipulation allows developers to dynamically interact with the structure and content of an HTML document using JavaScript. Common operations include selecting, creating, modifying, and deleting elements.
+
+1. Selecting Elements in the DOM
+   a. getElementById()
+   Purpose: Selects an element by its unique ID.
+   Example:
+
+const element = document.getElementById("myElement");
+Use Case: Ideal for selecting a single element with a unique ID.
+b. getElementsByClassName()
+Purpose: Selects elements by their class name.
+Example:
+const elements = document.getElementsByClassName("myClass");
+Use Case: Returns a live HTMLCollection of all elements with the given class name.
+
+c. getElementsByTagName()
+Purpose: Selects elements by their tag name (like div, p, etc.).
+Example:
+const elements = document.getElementsByTagName("p");
+Use Case: Useful for selecting all elements of a specific tag.
+
+d. querySelector()
+Purpose: Selects the first element that matches a CSS selector.
+Example:
+const element = document.querySelector(".myClass");
+Use Case: Useful for selecting a single element using any CSS selector.
+
+e. querySelectorAll()
+Purpose: Selects all elements matching a CSS selector.
+Example:
+const elements = document.querySelectorAll("div p");
+Use Case: Returns a static NodeList of all matching elements.
+
+from fpdf import FPDF
+
+# Create instance of FPDF class
+
+pdf = FPDF()
+
+# Add a page
+
+pdf.add_page()
+
+# Set title
+
+pdf.set_font('Arial', 'B', 16)
+pdf.cell(200, 10, txt='DOM Manipulation Notes', ln=True, align='C')
+
+# Add a new line
+
+pdf.ln(10)
+
+# Set font for the body text
+
+pdf.set_font('Arial', '', 12)
+
+# Adding the content of the notes to the PDF
+
+content = """1. Selecting Elements in the DOM
+Selecting elements is one of the key actions in DOM manipulation. Different methods are used to access elements based on their tags, IDs, classes, or other attributes.
+
+By ID:
+Method: document.getElementById("id")
+Purpose: Retrieves a single element with the specified ID.
+Example:
+let element = document.getElementById("myElement");
+
+By Class Name:
+Method: document.getElementsByClassName("className")
+Purpose: Returns a live HTMLCollection of elements with the given class.
+Example:
+let elements = document.getElementsByClassName("myClass");
+
+By Tag Name:
+Method: document.getElementsByTagName("tagName")
+Purpose: Retrieves a live HTMLCollection of elements with the specified tag name.
+Example:
+let paragraphs = document.getElementsByTagName("p");
+
+By CSS Selectors:
+Method: document.querySelector("selector") and document.querySelectorAll("selector")
+Purpose: querySelector: Retrieves the first matching element. querySelectorAll: Retrieves all elements matching the selector, returning a static NodeList.
+Example:
+let firstDiv = document.querySelector("div");
+let allDivs = document.querySelectorAll("div");
+
+2. Creating New Elements in the DOM
+   To create new elements and insert them into the DOM, the following methods are commonly used:
+
+Create Element:
+Method: document.createElement("tagName")
+Purpose: Creates a new element with the specified tag.
+Example:
+let newElement = document.createElement("p");
+
+Insert Element:
+Methods: appendChild(element) - Adds the new element as the last child of a parent.
+Example:
+let parent = document.getElementById("parentElement");
+parent.appendChild(newElement);
+
+Add Text to Elements:
+Method: element.textContent = "Some text"
+Purpose: Sets the text content of the element.
+Example:
+newElement.textContent = "This is a new paragraph!";
+
+3. Modifying or Deleting DOM Elements
+   Once elements are selected or created, you can manipulate them by modifying attributes, styles, or completely removing them.
+
+Modifying Content:
+Use textContent, innerHTML, and innerText to update the content of an element.
+Example:
+document.getElementById("myElement").textContent = "Updated content";
+
+Modifying Attributes:
+Method: element.setAttribute("attribute", "value")
+Purpose: Updates or adds an attribute to an element.
+Example:
+element.setAttribute("class", "newClass");
+
+Removing Attributes:
+Method: element.removeAttribute("attribute")
+Example:
+element.removeAttribute("class");
+
+Removing an Element:
+Methods:
+parentElement.removeChild(childElement) - Removes the child element from its parent.
+element.remove() - Directly removes the element.
+Example:
+let element = document.getElementById("myElement");
+element.remove();
+
+4. Changing Styles with DOM Manipulation
+   CSS properties can be dynamically updated using JavaScript.
+
+Inline Styles:
+Method: element.style.property = "value"
+Example:
+document.getElementById("myElement").style.color = "blue";
+
+Adding/Removing Classes:
+Methods: element.classList.add("class"), element.classList.remove("class"), element.classList.toggle("class")
+Example:
+document.getElementById("myElement").classList.add("highlight");
+
+5. Events and Event Listeners
+   DOM elements can respond to events like clicks, key presses, etc.
+
+Adding an Event Listener:
+Method: element.addEventListener("event", function)
+Purpose: Attaches a function that will run when the event occurs.
+Example:
+document.getElementById("myButton").addEventListener("click", function() {
+alert("Button was clicked!");
+});
+
+6. Traversing the DOM
+   DOM traversal refers to navigating between parent, child, or sibling elements.
+
+Parent Node:
+Method: element.parentNode
+Example:
+let parent = document.getElementById("myElement").parentNode;
+
+Child Nodes:
+Method: element.childNodes (returns all children, including text nodes) or element.children (returns element children only).
+Example:
+let children = document.getElementById("myElement").children;
+
+Siblings:
+Methods: element.previousElementSibling, element.nextElementSibling
+Example:
+let nextSibling = document.getElementById("myElement").nextElementSibling;
+
+7. NodeList vs. HTMLCollection
+   Both NodeList and HTMLCollection are collections of nodes, but they differ in the following ways:
+
+NodeList:
+Can be live (updated with DOM changes) or static.
+It can contain any type of node (including element nodes, text nodes, etc.).
+Example:
+let nodeList = document.querySelectorAll("div"); // Static NodeList
+
+HTMLCollection:
+Always live and updates as the DOM changes.
+Contains only element nodes.
+Example:
+let htmlCollection = document.getElementsByTagName("div"); // Live HTMLCollection
+"""
