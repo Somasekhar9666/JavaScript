@@ -1,0 +1,50 @@
+ What is the DOM Tree
+ The DOM (Document Object Model) Tree is a representation of an HTML or XML document in the form of a tree structure. The DOM tree defines the logical structure of a document, where each node in the tree represents part of the document, like elements, attributes, text, etc.
+
+Root of the DOM Tree: The <html> tag is the root node, and everything within it (like <head>, <body>, etc.) forms the child nodes.
+Branches of the DOM Tree: The child elements of each node (like nested divs, spans, or paragraphs) are like branches connecting the root and other elements.
+Leaves of the DOM Tree: Text or attributes that have no children are like the leaves of the tree.
+
+<html>
+  <head></head>
+  <body>
+    <div>
+      <p>Hello World!</p>
+    </div>
+  </body>
+</html>
+
+
+
+The DOM tree representation for the above HTML:
+<html>
+  ├─ <head>
+  └─ <body>
+      └─ <div>
+          └─ <p> "Hello World!"
+
+
+
+
+What are Nodes?
+A Node is the basic unit in the DOM tree. Every element, attribute, or piece of text in the DOM is a node. There are different types of nodes in the DOM, such as:
+
+Element Nodes: Represent HTML elements like <div>, <p>, <h1>, etc.
+Text Nodes: Represent the text inside the HTML elements.
+Attribute Nodes: Represent the attributes (like id, class, etc.) of HTML elements.
+Document Nodes: Represent the entire document as the root of the DOM.
+
+<div class="container">
+  <p>Some text</p>
+</div>
+Here:
+
+<div> and <p> are element nodes.
+"Some text" is a text node.
+class="container" is an attribute node.
+
+****all HTML elemts are nodes but all nodes are not hml elements , because text node is not  a element
+
+
+so  this buliding blocks will form the DOM :
+
