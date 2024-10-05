@@ -1,0 +1,93 @@
+<!-- Let’s combine the different real-life use cases of the event propagation methods
+(event.stopPropagation(), event.stopImmediatePropagation(), and
+event.preventDefault()) into a cohesive scenario that mimics a complex web
+application.-->
+
+<!-- Real-Life Use Case: E-Commerce Product Selection and Form Submission: -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>E-Commerce Example</title>
+  </head>
+  <body>
+    <nav>
+      <ul>
+        <li>Home</li>
+        <li>Products</li>
+        <li>
+          Options
+          <ul id="dropdown">
+            <li>Color</li>
+            <li>Size</li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+
+    <div id="product-details">
+      <form id="myForm">
+        <label for="inputField">Enter your details:</label>
+        <input type="text" id="inputField" required />
+        <button type="submit">Add to Cart</button>
+        <a href="https://example.com/cart" id="myLink">View Cart</a>
+      </form>
+    </div>
+
+    <div id="parent" style="padding: 20px; background: lightblue">
+      <button id="child">Click Me!</button>
+    </div>
+
+    <script>
+      // Event listener for navigation clicks
+      document.addEventListener("click", () => {
+        console.log("Nav clicked! Dropdown closed.");
+        document.getElementById("dropdown").style.display = "none"; // Close dropdown on nav click
+      });
+
+      // Event listener for dropdown clicks
+      document.getElementById("dropdown").addEventListener("click", (event) => {
+        event.stopPropagation(); // Prevent nav click from closing dropdown
+        console.log("Dropdown clicked! Options expanded.");
+      });
+
+      // Form submission handling
+      document.getElementById("myForm").addEventListener("submit", (event) => {
+        if (document.getElementById("inputField").value === "") {
+          event.preventDefault(); // Prevent form submission
+          console.log("Input is required");
+          event.stopImmediatePropagation(); // Stop other submit listeners
+        }
+      });
+
+      // Additional submit listener
+      document.getElementById("myForm").addEventListener("submit", () => {
+        console.log("Form submitted successfully!");
+      });
+
+      // Prevent navigation on link click
+      document.getElementById("myLink").addEventListener("click", (event) => {
+        event.preventDefault(); // Prevent the default navigation
+        console.log("Link clicked, but not navigating to the cart.");
+        // Custom logic can go here (e.g., show cart summary in a modal)
+      });
+
+      // Capturing phase for parent element
+      document.getElementById("parent").addEventListener(
+        "click",
+        (event) => {
+          event.stopPropagation(); // Prevent the event from reaching the child
+          console.log("Parent clicked. Child action suppressed.");
+        },
+        true
+      ); // Capturing phase
+
+      // Child button click handling
+      document.getElementById("child").addEventListener("click", (event) => {
+        console.log("Child clicked! Action executed.");
+      });
+    </script>
+  </body>
+</html>

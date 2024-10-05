@@ -1,0 +1,102 @@
+The life cycle of an event in JavaScript refers to the entire process that an event undergoes from the moment it is triggered to when it is fully processed and resolved. This includes all stages of its creation, propagation, handling, and completion.
+While event flow (capturing, target, bubbling) refers to the path an event takes through the DOM, the event life cycle is a broader concept that also includes other elements like how an event is initiated and eventually disposed of.
+
+
+
+so the stages in life cycle of EVENT is :
+                1.Creation--> event object is created at the Document(root) Level.
+                2.propagation( spreading or traveling) --> that created objet travles from the Document(root) level to targeted elemnt and babbule back to the Document Node.
+                3.Event Handling-->As the event propagates (through capturing or bubbling phases), event listeners attached to any elements in the DOM hierarchy are executed.
+
+
+Let’s break down the event life cycle and its relationship to event flow.
+1.Creation/Triggering of the Event*******:
+-->The life cycle of an event begins when an action occurs that triggers the event. This can be:
+A user interaction, like a click, keypress, or scroll.
+A programmatic action, such as dispatching an event through element.dispatchEvent(new Event('click')).
+
+-->When this happens, the browser creates an event object which contains details about the event (e.g., the type of event, the target element, metadata like timestamps, coordinates, etc.).
+Ex:let clickEvent = new Event('click');  // An event object for a click event
+
+------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+2.Event Propagation (Event Flow)**********:
+Event flow refers to the path an event takes through the DOM (Document Object Model) when it is triggered. When an event like a click happens, it doesn't simply stay at the element where it occurred. Instead, it moves through three phases, which are known as the event flow phases. These phases are:
+1.Capturing Phase (Trickling Down())
+2.Target Phase
+3.Bubbling Phase (Bouncing Up)
+
+
+2.1. Capturing Phase (Trickling Down):
+*Description: In this phase, the event starts from the root (the document) and travels down the DOM tree towards the target element where the event was triggered. This is like moving step-by-step from the parent element to the child elements, starting from the topmost ancestor (e.g., document) and going down towards the actual element where the user action happened (the target element).
+
+--->Why it’s called Capturing: The event is captured at each DOM level as it moves from the root downwards to the target. It "captures" the event at each level and gives any event listeners at that level a chance to respond to it.
+
+            
+            In the context of the capturing phase of event flow in JavaScript, "it" refers to the event object that is created when an event (like a click) occurs. Here’s a more detailed breakdown:
+                    Explanation of "It Captures the Event":
+                        1.Event Object:
+                            *-->When an event occurs (e.g., a user clicks a button), the browser creates an event object. This object contains information about the event, such as the type of event (click, keypress, etc.), the target element, and other relevant properties.
+                        2.Capturing Phase:
+                            *-->In the capturing phase, the event starts at the root of the DOM (the document object) and travels down towards the target element (the element that the user interacted with).
+                            *-->As the event travels through each ancestor element, it is captured at each level. This means that the event object is passed down to each of these elements, allowing them to react to the event.
+                        3.Why "Captures"?:
+                            *-->The term "capture" is used because the event is being intercepted by each DOM node as it moves down the tree. Each ancestor has the opportunity to handle the event before it reaches the target.
+                            *-->If an event listener is set up on any ancestor element to respond during the capturing phase, it can capture and act upon the event before it reaches the target element.
+
+Key Takeaway in this Pahase:
+    "It captures the event" means that the event object is being intercepted and processed at each level of the DOM hierarchy during the capturing phase, allowing those elements to respond to the event before it reaches the target. This design gives developers more control over event handling, especially in complex UIs.
+
+
+
+2.2.Target Phase:
+Description: Once the event has trickled down to the target element (the element that was clicked or interacted with), it enters the target phase. In this phase, the event is triggered on the target element itself.
+
+->Why it’s called Target: This is where the event has reached the specific element where the user action occurred. The event is now targeted at the element that triggered it, like a button click or an input change.
+
+->When Event Listeners Work: All event listeners attached to the target element will be triggered during this phase, regardless of whether they were set up for capturing or bubbling.
+
+Important Note: If there are no event listeners on the target, the event simply moves on to the next phase, but it’s rare that you'd have an interactive element without a listener.
+
+
+
+2.3.Bubbling Phase (Bouncing Up):
+Description: After reaching the target, the event bubbles up from the target element back to the root (document), traversing the DOM tree in reverse order (from the child to the parent elements). This is the phase where you can respond to the event as it "bounces back" up through the DOM.
+
+Why it’s called Bubbling: The event bubbles back up through the DOM, like a bubble rising to the surface. The event travels from the innermost child element (the target) up through each ancestor, "giving each ancestor a chance to respond to the event."
+
+When Event Listeners Work: Event listeners that are set up to listen in the bubbling phase are triggered here. By default, all event listeners without the capture flag set to true are part of this phase. For example:
+        ex:element.addEventListener('click', listenerFunction);  // Bubbling mode by default
+
+Visualization: After reaching the target, the event bubbles up like this:
+        Target (Button) -> Parent Div -> Body -> HTML -> Document
+
+
+
+
+------------------------------------------------------------------------------------------------
+
+3. Event Handling (Execution of Listeners):
+*As the event propagates (through capturing or bubbling phases), event listeners attached to any elements in the DOM hierarchy are executed.
+*The event listener (callback function) receives the event object as a parameter and can perform actions based on it, such as logging data, stopping propagation, or preventing default behaviors.
+
+ex:
+    document.querySelector('#myButton').addEventListener('click', (event) => {
+  console.log('Button clicked', event);
+});
+
+---------------------------------------------------------------------------------
+
+4. Event Completion and Cleanup:
+*Once the event has finished propagating through all relevant elements and all associated event listeners have been executed, the event life cycle comes to an end.
+*The event object may be discarded, and any memory or resources associated with it are cleaned up by the browser.
+
+---------------------------------------------------------------------------------------------------------
+
