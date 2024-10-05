@@ -1,0 +1,28 @@
+What is Delegation?
+Delegation is a general programming and organizational concept where a task or responsibility is assigned to a different entity or function rather than being handled directly by the original entity. This approach helps streamline processes, reduce redundancy, and improve efficiency.
+
+Example of Delegation
+Imagine a manager who delegates tasks to their team members rather than doing everything themselves. For instance, a project manager might delegate the writing of a report to one team member and the presentation to another. This way, each team member can focus on their strengths, improving overall productivity.
+
+What is Event Delegation?
+Event Delegation is a specific application of the delegation concept in the context of event handling in the DOM (Document Object Model). Instead of attaching event listeners to individual elements, an event listener is attached to a common ancestor (parent) of those elements. When an event occurs, it bubbles up to the parent, which can then determine what action to take based on the target of the event.
+
+Purpose of Using Event Delegation
+    1.Performance Optimization: Reduces the number of event listeners in the DOM. Instead of attaching listeners to multiple child elements, a single listener on the parent handles events for all children.
+    2.Dynamic Content Handling: Allows for easier handling of dynamically added elements. If new child elements are added later, they automatically inherit the event behavior from the parent.
+    3.Simplified Code: Reduces the complexity of managing multiple listeners, leading to cleaner and more maintainable code.
+
+
+Why is it Called Event Delegation?
+It's called event delegation because the parent element "delegates" the handling of events that occur on its children to a single event handler. This handler checks the event target and executes the appropriate logic based on which child element was interacted with.
+
+How Event Delegation Works
+    1.Event Propagation: Event delegation works within the context of event propagation, specifically in the bubbling phase. When an event occurs, it starts at the target element and bubbles up through its ancestors.
+    2.Single Event Listener: By placing a single event listener on a parent element, we can listen for events that occur on its children.
+3.Event Targeting: Inside the event handler, we can use event.target to identify which child element triggered the event and execute specific logic accordingly.
+
+
+Where It Comes in the Event Lifecycle:
+Event delegation operates primarily during the bubbling phase of the event lifecycle, where the event starts at the target and moves up to the parent elements.
+
+
