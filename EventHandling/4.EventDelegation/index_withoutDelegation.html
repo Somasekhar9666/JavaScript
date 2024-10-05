@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>To-Do List Without Event Delegation</title>
+    <style>
+      #taskList {
+        list-style-type: none;
+        padding: 0;
+      }
+      .task {
+        padding: 10px;
+        background: #f4f4f4;
+        margin: 5px 0;
+        position: relative;
+      }
+      .delete-btn {
+        position: absolute;
+        right: 10px;
+        cursor: pointer;
+        color: red;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>My To-Do List</h1>
+    <input type="text" id="taskInput" placeholder="Add a new task" />
+    <button id="addTask">Add Task</button>
+    <ul id="taskList"></ul>
+
+    <script>
+      const taskInput = document.getElementById("taskInput");
+      const taskList = document.getElementById("taskList");
+      const addTaskButton = document.getElementById("addTask");
+
+      // Add new task
+      addTaskButton.addEventListener("click", () => {
+        const taskText = taskInput.value.trim();
+        if (taskText) {
+          const li = document.createElement("li");
+          li.className = "task";
+          li.innerHTML = `${taskText} <span class="delete-btn">X</span>`;
+          taskList.appendChild(li);
+          taskInput.value = ""; // Clear input
+
+          // Attach event listener to the delete button of the new task
+          const deleteButton = li.querySelector(".delete-btn");
+          deleteButton.addEventListener("click", () => {
+            taskList.removeChild(li);
+            console.log("Task deleted:", taskText);
+          });
+
+          console.log("Task added:", taskText);
+        }
+      });
+    </script>
+  </body>
+</html>

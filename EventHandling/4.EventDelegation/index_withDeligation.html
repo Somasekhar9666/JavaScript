@@ -1,0 +1,67 @@
+<!------Example: Event Delegation in a Webpage:
+Let’s consider a simple to-do list application where users can add and remove tasks.-->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Event Delegation Example</title>
+    <style>
+      #taskList {
+        list-style-type: none;
+        padding: 0;
+      }
+      .task {
+        padding: 10px;
+        background: #f4f4f4;
+        margin: 5px 0;
+        position: relative;
+      }
+      .delete-btn {
+        position: absolute;
+        right: 10px;
+        cursor: pointer;
+        color: red;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>My To-Do List</h1>
+    <input type="text" id="taskInput" placeholder="Add a new task" />
+    <button id="addTask">Add Task</button>
+    <ul id="taskList"></ul>
+
+    <script>
+      const taskInput = document.getElementById("taskInput");
+      const taskList = document.getElementById("taskList");
+      const addTaskButton = document.getElementById("addTask");
+
+      // Event delegation for the task list
+      taskList.addEventListener("click", (event) => {
+        //event contains diffrent classess("delete-btn" and "task")
+        // with the delete-btn class we can delete the li item
+        //*****we using same event for both adding and deleting .
+        if (event.target.classList.contains("delete-btn")) {
+          // Delete task logic
+          const taskItem = event.target.parentElement;
+          taskList.removeChild(taskItem);
+          console.log("Task deleted:", taskItem.textContent);
+        }
+      });
+
+      // Add new task
+      addTaskButton.addEventListener("click", () => {
+        const taskText = taskInput.value.trim();
+        if (taskText) {
+          const li = document.createElement("li");
+          li.className = "task";
+          li.innerHTML = `${taskText} <span class="delete-btn">X</span>`;
+          taskList.appendChild(li);
+          taskInput.value = ""; // Clear input
+          console.log("Task added:", taskText);
+        }
+      });
+    </script>
+  </body>
+</html>
