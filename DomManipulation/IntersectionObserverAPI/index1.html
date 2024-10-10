@@ -1,0 +1,20 @@
+<!-----Lazy Loading of the Images-->
+<div class="container">
+  <img class="lazy-image" data-src="image1.jpg" alt="Lazy Loaded Image" />
+  <img class="lazy-image" data-src="image2.jpg" alt="Lazy Loaded Image" />
+  <div class="animate-box">This box will animate into view</div>
+</div>
+
+// Callback function for when intersection changes let callback = (entries,
+observer) => { entries.forEach(entry => { if (entry.isIntersecting) { // Lazy
+load image when it comes into view if
+(entry.target.classList.contains('lazy-image')) { entry.target.src =
+entry.target.getAttribute('data-src'); } // Trigger animation when box comes
+into view if (entry.target.classList.contains('animate-box')) {
+entry.target.style.animation = 'slide-in 1s forwards'; } // Once action is done,
+stop observing the element observer.unobserve(entry.target); } }); }; // Set up
+the observer let observer = new IntersectionObserver(callback, { root: null, //
+defaults to the viewport threshold: 0.1 // triggers when 10% of the element is
+visible }); // Start observing target elements
+document.querySelectorAll('.lazy-image, .animate-box').forEach(target => {
+observer.observe(target); });
