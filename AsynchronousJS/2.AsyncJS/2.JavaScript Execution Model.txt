@@ -1,0 +1,280 @@
+The JavaScript Execution Model is the framework that defines how JavaScript runs and manages tasks, especially given its single-threaded, asynchronous nature. 
+This model helps JavaScript perform tasks in a non-blocking way, keeping applications responsive. Let’s go through what the model is, the key concepts involved, why it’s named as such, its purpose, and how it differs from execution models in other languages.
+
+
+
+
+1. What is the JavaScript Execution Model?
+    The JavaScript Execution Model describes how JavaScript runs code from start to finish. 
+    Since JavaScript is single-threaded, it can only do one task at a time. This model uses a combination of the call stack, Web APIs, callback queue, and the event loop to handle synchronous and asynchronous tasks efficiently.
+
+
+
+2. Why is it called the "JavaScript Execution Model"?
+    It’s called the "JavaScript Execution Model" because it defines the mechanism of how JavaScript executes tasks, especially managing asynchronous operations within a single-threaded environment. 
+    It explains how JavaScript "executes" or processes all code, including tasks like waiting for data from a server or handling user interactions.
+
+
+
+3. Purpose of the JavaScript Execution Model
+The primary purpose is to:
+    Handle tasks sequentially while keeping the application responsive.
+    Efficiently manage asynchronous tasks like loading data, setting timers, or listening for user events without blocking other code from running.
+
+The model helps JavaScript interact smoothly with the web browser and the server, creating a responsive experience for users.
+
+
+
+
+
+
+
+
+
+
+
+*4. Concepts Involved in the JavaScript Execution Model
+
+The main concepts of the JavaScript Execution Model include:
+
+1. Call Stack
+The Call Stack is where JavaScript keeps track of what functions are currently being executed. It operates on a "last-in, first-out" (LIFO) principle, meaning that the last function that gets added to the stack is the first one to be completed.
+
+When JavaScript encounters a function call, it pushes that function onto the call stack. When the function completes, it’s popped off the stack. If another function is called within a function, it gets pushed onto the stack, creating a chain of functions to execute in order.
+
+Example of Call Stack Execution:
+function greet() {
+    console.log("Hello");
+    ask();
+}
+
+function ask() {
+    console.log("How are you?");
+    reply();
+}
+
+function reply() {
+    console.log("I am fine, thank you!");
+}
+
+greet();
+
+
+Call Stack Behavior:
+The greet() function is called, so it’s pushed onto the call stack.
+Inside greet(), ask() is called, so ask() is pushed onto the stack.
+Inside ask(), reply() is called, so reply() is pushed onto the stack.
+Each function completes its task, gets popped off the stack, and the call stack becomes empty at the end.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+2. Web APIs
+Web APIs are features provided by the browser (or the environment JavaScript is running in) that allow JavaScript to perform asynchronous tasks like setting timers, handling HTTP requests, or waiting for events (such as button clicks). These APIs work outside of the main JavaScript thread, meaning that while they handle asynchronous tasks, JavaScript can continue running other code without waiting for these tasks to complete.
+
+Common Web APIs:
+setTimeout: Runs code after a specified amount of time.
+fetch: Requests data from a server.
+DOM Events: Listens for user interactions like clicks, input, etc.
+
+
+->Example with setTimeout:
+
+console.log("Start");
+
+setTimeout(() => {
+    console.log("Inside Web API Timeout");
+}, 10000);
+
+console.log("End");
+
+
+In this example:
+"Start" is logged immediately.
+setTimeout is called and sent to a Web API, which starts a 10-second timer outside the call stack.
+"End" is logged immediately since setTimeout is not blocking.
+After 10 seconds, the callback function from setTimeout (the one that logs "Inside Web API Timeout") is moved to the Callback Queue.
+
+
+
+
+
+
+
+
+
+
+
+
+
+3. Callback Queue
+The Callback Queue (or Task Queue) is a holding area for functions that are ready to be executed but are waiting for the Call Stack to be empty. After an asynchronous task is completed by a Web API, its callback function (like a function passed to setTimeout) is sent to the Callback Queue.
+
+The Event Loop will monitor the Call Stack, and when it’s empty, it will move the callback functions from the Callback Queue to the Call Stack, allowing them to be executed.
+
+Continuing from the above example:
+
+After the 10-second timer completes, the callback function from setTimeout (console.log("Inside Web API Timeout")) is moved to the Callback Queue. It waits in the queue until the Call Stack is empty.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+4. Event Loop
+The Event Loop is the manager that makes JavaScript’s asynchronous execution possible. It constantly checks if the Call Stack is empty. If the Call Stack is empty, the Event Loop will move the first item from the Callback Queue to the Call Stack for execution.
+
+This allows JavaScript to handle multiple tasks seemingly at the same time, even though it’s single-threaded.
+
+In the example:
+
+The Event Loop watches the Call Stack.
+When the Call Stack becomes empty (after logging "Start" and "End"), the Event Loop moves the callback function from the Callback Queue to the Call Stack.
+The setTimeout callback function (console.log("Inside Web API Timeout")) is executed from the Call Stack, logging "Inside Web API Timeout."
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+***Putting It All Together: Real Web Page Example
+
+Imagine you’re building a webpage where:
+You fetch user data from an API when the page loads.
+There’s a button that sets a timer to show a message after 3 seconds.
+
+
+
+console.log("Page loading...");
+
+fetch("https://jsonplaceholder.typicode.com/users/1")
+    .then((response) => response.json())
+    .then((data) => {
+        console.log("Fetched user data:", data);
+    });
+
+document.getElementById("showMessage").addEventListener("click", () => {
+    console.log("Button clicked. Message will show in 3 seconds.");
+    
+    setTimeout(() => {
+        console.log("Here is your message!");
+    }, 3000);
+});
+
+console.log("Page loaded!");
+
+
+
+
+
+
+
+Walkthrough of Execution Model in This Example:
+
+Call Stack:
+    "Page loading..." is logged.
+    fetch() is called and starts an HTTP request in the background (handled by Web APIs).
+    "Page loaded!" is logged.
+
+Web APIs:
+    fetch() request is sent to the server. JavaScript doesn’t wait for it to complete and moves on to other tasks.
+    When the "Show Message" button is clicked, setTimeout is called, setting a 3-second timer in the Web API.
+
+Callback Queue:
+    When the fetch request completes, the response is sent to the Callback Queue.
+    After 3 seconds, the setTimeout callback is also sent to the Callback Queue.
+
+Event Loop:
+    The Event Loop checks if the Call Stack is empty.
+    Once it’s empty, it moves the fetch response callback from the Callback Queue to the Call Stack, logging "Fetched user data" with the fetched data.
+
+Then, after the setTimeout finishes, it logs "Here is your message!" from the Callback Queue.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+*Why the Execution Model is Important for Web Pages
+
+JavaScript’s execution model allows it to:
+Keep web pages responsive while waiting for data or events, so the page doesn’t freeze while an API call is running.
+Handle multiple tasks in sequence even if some tasks take longer, like waiting for user input or server responses.
+Ensure user interactions are immediate by moving tasks to Web APIs and processing them without blocking other code.
+
+Example of a Synchronous Web Page Issue:
+
+If everything in JavaScript was synchronous, every time you fetched data from a server, the entire page would freeze until the data arrived, resulting in a terrible user experience. Instead, by using asynchronous handling through the Event Loop, Web APIs, and Callback Queue, JavaScript allows webpages to remain interactive, loading parts of data or responding to user events as they happen.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+*Summary
+Call Stack: Runs synchronous tasks, one at a time, in a LIFO manner.
+Web APIs: Handle asynchronous tasks outside the Call Stack.
+Callback Queue: Holds completed async callbacks for the Event Loop to move to the Call Stack.
+Event Loop: Checks if the Call Stack is empty; if so, it moves tasks from the Callback Queue to the Call Stack.
+Together, these concepts form the JavaScript Execution Model, allowing single-threaded JavaScript to handle asynchronous tasks efficiently, keeping webpages responsive and fast.
