@@ -1,0 +1,15 @@
+Q>what  a beginer should learn before , basic Web APIs like setTimeout and setInterval or Promises ?
+
+For a beginner, it’s best to start with basic Web APIs like setTimeout and setInterval before moving on to Promises. Here’s why:
+
+    1.Learning the Basics of Asynchronous JavaScript: setTimeout and setInterval are easy-to-understand tools that introduce the concept of asynchronous JavaScript without requiring much overhead. They allow beginners to see how code can be delayed or repeated without blocking other operations on the page. These are very visual and practical, making them ideal for early understanding.
+
+    2.Foundational Knowledge: Understanding setTimeout and setInterval helps build a foundation for more advanced asynchronous operations. They show how JavaScript can manage tasks in the background, which is essential for grasping the idea of Promises later on.
+
+    3.Handling Simple Asynchronous Tasks: These functions provide the most basic form of callback functionality, allowing beginners to get comfortable with the idea of providing one function to be executed later.
+
+    4.Transitioning to Promises: Once comfortable with basic asynchronous behavior, learners can then move on to Promises. Promises build upon the concept of asynchronous tasks and callbacks, but they also introduce error handling and cleaner ways to chain actions, which is very useful for more complex, real-world applications like fetching data.
+
+
+
+    
