@@ -1,0 +1,285 @@
+The JavaScript Execution Model is the framework that defines how JavaScript runs and manages tasks, especially given its single-threaded, asynchronous nature. 
+This model helps JavaScript perform tasks in a non-blocking way, keeping applications responsive. Let’s go through what the model is, the key concepts involved, why it’s named as such, its purpose, and how it differs from execution models in other languages.
+
+
+
+
+1. What is the JavaScript Execution Model?
+    The JavaScript Execution Model describes how JavaScript runs code from start to finish. 
+    Since JavaScript is single-threaded, it can only do one task at a time. This model uses a combination of the call stack, Web APIs, callback queue, and the event loop to handle synchronous and asynchronous tasks efficiently.
+
+
+
+2. Why is it called the "JavaScript Execution Model"?
+    It’s called the "JavaScript Execution Model" because it defines the mechanism of how JavaScript executes tasks, especially managing asynchronous operations within a single-threaded environment. 
+    It explains how JavaScript "executes" or processes all code, including tasks like waiting for data from a server or handling user interactions.
+
+
+
+3. Purpose of the JavaScript Execution Model
+The primary purpose is to:
+    Handle tasks sequentially while keeping the application responsive.
+    Efficiently manage asynchronous tasks like loading data, setting timers, or listening for user events without blocking other code from running.
+
+The model helps JavaScript interact smoothly with the web browser and the server, creating a responsive experience for users.
+
+
+
+
+
+
+
+
+
+
+----------------------------------------MAIN  CONCEPTS------------------------------------
+*4. Concepts Involved in the JavaScript Execution Model:
+
+The main concepts of the JavaScript Execution Model include:
+
+1. Call Stack:
+JS is Synchronous single thread language , it has one call stack , which can do ONE thing at a time ,which present Inside the V8 Engine .
+all the code of JS executed inside the call Stack , it waits for no one, when ever a new Execution Context came inside the Stack V8 engine immediately executes that execution context.
+    Global Execution Context : it is a environment to execute the Execution context. 
+    Execution Context: it is a function execution , if you define a function and call it ,it can be treated as one Execution  context. 
+
+    *so if the control goes to that line and idenfied it is as a function , then  one Execution context is created and Pushed to the Call Stack .
+    the call stack immediately execute the Execution context that came in . it is like JS don't wait for any thing
+    Ex Pic:1 
+
+
+
+
+
+
+Problem with Call Stack : what if you want to execute the function after sometime or you have to do the task after some time, a non synchronous task or a function call after sometime. 
+                          Call stack can not do this , because it will executes the tasks immediately in no time.
+
+
+
+                    
+******so we need a Timer to do this kinda of tasks , or some kind of powers or support to do the Asynchronous tasks.
+
+
+
+
+
+
+
+
+
+
+
+*Q>How JS can aechive the Asynchronous functiolity even though it is single threaded and has single call stack?
+2.Web API's: *Web API's are the some kind of super powers that a  BROWSER have and JS engine can access them  to aechive the Asynchronous functionolity . it can able to  perform the asynchronous tasks with help of Web API's.
+
+so with help this powers this can get a Timer functionlity , network opeartions , DOM manipulation, local storage etc.....
+
+Web API's are thag give powers to JS engine is : 
+         1. setTimeout 
+         2. DOM Api's
+         3.fetch 
+         4.local storage
+         5.console
+         6.location
+
+
+So JS engine can access these Web API's and use them in Call Stack to aechive the Asynchronous functiolity(can perform the asynchronous tasks)
+these super powers can go inside the call stack, call stack excutes them to perform the async tasks 
+
+*Note:These APIs are not PART of the JS , these are the FEATURES given by the browser. JS engine use them to aechive the Asynchronous functiolity
+
+EX:PIC2 , PIC3 ,pic4, pic5
+
+
+*Q>how can the JS engine can get the web Api's inside the Call Stack to use them?
+    *Global Object: browsers give JS engine the fecility to use the web Api's(super powers)
+         through a KEY WORD known as WINDOW.
+         PIC6
+
+
+
+    ex: if you want to use timer super power , you need to use WINDOW.setTimeout in your JS code. 
+         pic7
+
+    Q>But when we write the code we only use Direct setTimeout insted of WINDOW.setTimeout, why?
+       this WINDOW is global object or it is a global scope , so we can access it with out key word WINDOW
+       this WINDOW object wraps up every super power (feature) and give to the JS engine so that used directly in the call Stack
+       ex:PIC8,PIc9
+    
+
+Examples of using the WebApi's:
+
+1.setTimeout:
+
+console.log("start")
+
+setTimeout(function SBI(){
+    console.log("callback")
+},10000)
+
+console.log("end")
+
+
+Explanation: 
+1. control points at first line ->it uses console WebApi and moves Execution Context(here console.log"start") CALL STACK, call stack logs the "start" . it will be printed immediately (P10) in console
+*2.when it is came to setTimeout line it uses "setTimeout" webapi , the web api takes one CALLBACK function and Time delay values as paramters .
+3.when the setTimeout gets the call back function it registers the function(SBI) in browser environment (P11). 
+4.it also start the timer for 10000 millisec(10sec).(P12)
+5.now the control came to "console.log("end")" .so with help of webapi the Execution Context(console.log"end" here) is moved to the CALL STACK.so the Call Stack will execute the Execution Context(console.log"end")  (P13) (P14). "but the TIMER is still runnung from the brower side"(P15)
+6.Now the there is noting to point for controler so it stops , which means the program stoped (P16) , so the GEC(global execution context)  in  Call Stack will pops out(P17) , so the call stack is empty now. 
+
+*7 meanwhile when the  TIMER stops running ,  the registered call back function(SBI) should be moved to the CALL STACK(P18).it should not be moved directly to the Call Stack.
+here the CALLBACK QUEUE and EVENT LOOP comes into picture. 
+*8 when the timer stops running the Callback function is moved immediately to the CALLBACK QUEUE(P19)(P20).
+*CALL BACK QUEUE is the temporary storage for all the call back functons.
+---------EVENT LOOP----------------------
+****the job of EVENT LOOP is to checks the CALLBACK QUEUE ,and puts the functions of the callback queue into CALL STACK.(P21) 
+so the Event loop continusly moniter the Call Stack and Call back queue,  it moniter the Stack to be empty and callback QUEUE if any callback functions are presnt.
+9.so Event Loop pushed the callback function (SBI) present in the callback queue(P22).
+10.now the callstack execute the SBI and logs the "callback" immediately.(P23)(P24)(p25)(P26)
+
+
+
+
+
+
+
+
+
+
+
+2.DOM Api's:
+console.og("Start")
+document.getElementById("btn").addEventListner("click", function SBI(){console.log("CALL BACK")});
+console.log("End") (P27)
+
+Explanation:
+1.when the control came to the "Start", it is logged with help of the console web Api.(P28)
+2***now the control pointing to  the 2nd line , so the getElementById fetches the elemetnt from the DOM with help of DOM API's (P29) and .addEventListner Registers the  callback function(SBI) on the WEB environment and attaches the Event on that function("Attaches click event on SBI function) (P30)
+3.Controler moves to the Next line , because JS won't wait for None(P31)
+4.Now the last line , the Execution Context (console.log"End") pushed to the call stack with help of the Console web api. and logs the "End" in Console.(P32)
+5.Program execusion is ended so the GEC is popped out from the call stack.(P33)
+*6.But the addEventListner function (SBI ) stay on the web Api environment untill we specifically remove or Close the brower
+7.So the SBI(call =back with event listner) function will sit over the web api environment hoping that the BUTTON will be Clicked and moved to the Call Stack to executed.
+*8.when the user clicks on the Button the SBI method wil goes to the Callback QUEUE (P34) (P35) waits over there for execution.
+9.so the Event loop continusly moniter the Call Stack and Call back queue,  it moniter the Stack to be empty and callback QUEUE if any callback functions are presnt.
+10.it pushes the SBI function to the call stack.(P36)
+11.the call stack immediately executes the SBI function with help of webapi and prints "CALLBACK"
+
+
+*Q>what happens when a user clicks that single button  multiple times at once ?
+A>1.many callbacks are pushed to Callback QUEUE (P37) and they wait for to be executed at Call Stack
+2. the event loop pushes the each call back when ever the call stack is empty.
+3. so at partycular time all the callbacks in QUEUE are executed
+
+
+
+
+
+
+
+
+
+3.Fetch WebApi ************************IMP and Uniq:
+console.og("Start")
+
+setTimeout (function SBIT(){ conole.log("SBIT setTimeout ")}, 10000);
+
+fetch("https://api.netflix.com")
+.then(function CBN()
+    {console.log("CB netflix")}
+    );
+
+console.log("End") 
+
+
+
+
+Explanation:
+1.it logs the start 
+2. it registers the callback function(SBIT) in web api environment (P38), sets the timer for 10sec 
+*3.Now the controler points to the fethc part (P39), here the Fetch function also a web API which is used to make network calls. so it also registers the callback function (CBN) in web environment.(P40)
+4.now we have two functions sitting over web environment (SBIT and CBN). both are waiting to executed in Call Stack.
+5.SBIT is waiting for timer to run out so that it  will be moved to call stack.
+6.also the CBN function is waiting for the network(fetch) call that made to the server to be completed(P41) , so that it also move the call stack.
+*7.Both functions are competing for each other which to first inside the call stack.
+*********MICRO TASK QUEUE************
+8.MICRO TASK QUEUE is similar as the CALL BACK QUEUE but it has higer PRIORATY then the callback queue. (P42).
+*what ever the functions comes into MICRO TASK QUEUE are executed first and the functions come into the CALLBACK QUEUE are executed next
+
+*Q>what types of functions goes into MICRO TASK QUEUE?
+   A>the registered callback functions in web api that are comes from the PROMISES are goto the MICRO TASK QUEUE.(P43)
+      ->also the mutation observer callbacks goes to MICRO TASK QUEUE
+
+9.the CBN will go inside the MICRO TASK QUEUE(p44)
+10. Now the "end" is logged .
+
+10.so then the  event loop pushes the functions from the Both QUEUEs which are available when the call stack is empty.
+11. so it pushes the CBN inside the call staks, call stack executes immediately.(P45)
+12.after the timeout , the SBIT joins the callback queue , when the call stack is empied the SBIT also excuted by the call stack.(P46)
+
+****************STARVATION OF CALLBACK QUEUE********
+the callbacks or callback in the callback queue won't get a chance or have to wait for a long time because the callbacks in the MICRO TASK QUEUE are keep on executing (high PRIORATY), not giving chance to the callbacks in callback queue.(P47) (P48)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CONCLSION:JS engine does not do much work -> dont underestamate the JS engine (P49) , do not thisnk it is only a CALL Stack(P50).
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

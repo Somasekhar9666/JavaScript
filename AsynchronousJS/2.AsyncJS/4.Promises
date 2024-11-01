@@ -1,0 +1,76 @@
+*Q>Why are They Called "Promises"? ******
+In general terms, a promise is a commitment to provide a result in the future. Just as you may promise to deliver something at a later date, a JavaScript Promise is a "promise" that an operation will complete and provide a value (or error) at some later time.
+
+
+
+
+
+
+*Q>What is a Promise in JavaScript?
+In JavaScript:
+A Promise represents a value that may be available now, or in the future, or possibly never.
+It’s an object that acts as a placeholder for the result of an asynchronous operation.
+A Promise can have three states:
+    ->Pending: The initial state, where the operation hasn’t completed yet.
+    ->Fulfilled: The operation completed successfully, and the promise has a result.
+    ->Rejected: The operation failed, and the promise has an error.
+
+
+
+*Promises in JavaScript are a way to handle asynchronous operations, allowing code to run in a non-blocking manner. They provide a cleaner, more manageable way to deal with operations that take time to complete, like loading data from a server or reading a file.
+
+
+Purpose of Promises in JavaScript
+Promises provide a more efficient and readable way to handle asynchronous tasks compared to callbacks. They:
+
+    Simplify code by avoiding "callback hell," which happens when there are multiple nested callbacks.
+    Handle errors more gracefully, as errors can propagate through chained .then() and .catch() methods.
+
+
+
+
+
+
+
+
+*1.Basic Syntax:
+
+let promise = new Promise(  (resolve, reject) => 
+  {
+    // Asynchronous operation
+    if (/* success */) 
+    {
+        resolve(result); // When successful
+    } 
+    else 
+    {
+        reject(error);   // When an error occurs
+    }
+  } 
+
+);
+
+
+
+
+
+
+
+
+2. How Promises Work: Basic Example
+Here’s a simple promise to simulate a task that completes in 2 seconds.
+
+let myPromise = new Promise((resolve, reject) => {
+  setTimeout(() => {
+    resolve("Task completed!");
+  }, 2000);
+});
+
+myPromise.then((result) => {
+  console.log(result); // Output: Task completed!
+});
+
+
+  ->resolve is called after 2 seconds, meaning the promise is fulfilled, and "Task completed!" is logged.
+
+
