@@ -1,0 +1,519 @@
+Q>what is async ? 
+ async is a keyword use to create a async function.
+ *if you create a function with "async" keyword , "it will ALWAYS returns a PROMISE(object)"
+  *even if you try to return a value from that function , it wraps that value in a Promise and returns a Promise
+
+ex: 
+async function getData(){
+    return "Somasekhar" 
+
+}
+
+const dataPromise(object) =getData();
+dataPromise.then(           res=> console.log(res)   )      //logs Somasekhar
+
+Explanation:
+Async functions automatically return a promise.
+The promise’s resolved value is what you get inside .then().
+The dataPromise object holds the promise, but .then() gives you the resolved value directly, which is why only "Somasekhar" is logged.
+
+
+
+const p = new Promise((resovle , reject ) => {
+    resolve("Promise Resolved")
+})
+
+async function getData(){
+    return p
+
+}
+
+
+
+const Promise(object) =getData();
+Promise.then(           res=> console.log(res)   )   //    romise Resolved
+
+
+**Async and await are used together to handle the promises
+
+
+
+Q> if Async and await are used to handle Promises then how the promises are Hanadled before Async and await?
+
+
+*Handling Promises before Asyc and await:
+
+const promise = new Promise((resovle , reject ) => {
+    resolve("Promise Resolved")
+})
+
+promise.then(result => console.log(result))
+
+
+
+
+
+
+*after Async and await:
+
+const promiseobj = new Promise((resovle , reject ) => {
+    resolve("Promise Resolved")
+})
+
+async function handlePromise(){
+    1.await promiseobj;                               //keping  await in before promise , so the promise gets resolved automatically
+    2.now the promise is resolved , now store the data in any variable
+         so   const val=await promiseobj;       // so promise is resolved and saved in variable
+}
+
+so it will be :
+        async function handlePromise(){
+            let val=await promise
+            console.log(val)
+    
+        }
+
+calling:handlePromise()   // logs Promise Resolved
+
+
+
+
+
+*****await(): this is only can be used in inside the async function , if try to define , it will throw the synctax error
+       you have to use before the Promise only 
+       so it will resolve the Promise.
+
+    
+
+
+
+---------Diffrence b/w handnlig the Promises with normal way and using async and await. -------------------------
+PROMISE:
+const SekharPromise =  new Promise(  (resolve,reject) => {
+    setTimeout(function {
+        resolve("Mr. Somasekhar Your Promise has been  Resolved")                                  // this promise will resovled after 20 sec of calling the constructer 
+
+    },20000)
+})
+
+
+I.when you Use Normal way ::
+
+
+  function getData() 
+  {
+    SekharPromise.then(  (result)  //calback function  => console.log(result)   )
+    console.log("Its already 9.00 PM")
+  }
+
+
+calling:
+getData()
+  the output is :  1.Its already 9.00 PM
+                    2.Mr. Somasekhar Your Promise has been  Resolved
+
+
+Q> why the output is like that ? why it logged "Its already 9.00 PM" before the "Mr. Somasekhar Your Promise has been  Resolved"?
+A>Step-by-Step Clarification with the Code Example
+Let’s go over the code again and break down the steps to clarify exactly when each part is added to the Microtask Queue.
+
+
+const SekharPromise = new Promise((resolve, reject) => {
+    setTimeout(function() {
+        resolve("Mr. Somasekhar Your Promise has been Resolved");
+    }, 20000); // This will resolve after 20 seconds
+});
+
+function getData() {
+    SekharPromise.then(result => console.log(result));
+    console.log("Its already 9.00 PM");
+}
+
+getData();
+
+
+
+*Execution Steps with the Microtask Queue
+    1.Promise Creation and setTimeout Registration
+        ->SekharPromise is created, and its executor function resolve is set up with setTimeout to trigger after 20 seconds.
+        ->The setTimeout function is registered in the Web API environment with a 20-second timer.
+        ->Nothing is yet in the Microtask Queue or Callback Queue.
+    
+
+    2.Calling getData()
+
+        ->getData() is called, 
+        which contains two lines:
+            SekharPromise.then(result => console.log(result));
+            console.log("Its already 9.00 PM");
+
+        ->SekharPromise.then(result => console.log(result)):
+            This line sets up a "then" callback for SekharPromise. At this point, the promise is still pending because it hasn’t been resolved yet (the setTimeout hasn’t completed).
+            The "then" callback (result) => console.log(result) is not yet added to the Microtask Queue. It will be added only when the promise is resolved.
+
+        ->console.log("Its already 9.00 PM");:
+            This synchronous log statement executes immediately, so "Its already 9.00 PM" is logged first.
+
+    3.After 20 Seconds: Resolving the Promise
+        ->After 20 seconds, setTimeout finishes, and the Web API places the resolve function in the Callback Queue.
+        ->The event loop checks the Call Stack. If it’s clear, it moves the resolve function to the Call Stack and executes it.
+
+    
+    4.Executing the resolve Function
+        ->The resolve function runs and resolves SekharPromise with the value "Mr. Somasekhar Your Promise has been Resolved".
+        ->Now that the promise is resolved, the "then" callback (result) => console.log(result) is scheduled to be added to the Microtask Queue.
+    
+    5.Event Loop Prioritizes Microtask Queue
+        ->The event loop prioritizes tasks in the Microtask Queue over the Callback Queue.
+        ->The "then" callback (result) => console.log(result) is now executed from the Microtask Queue, logging "Mr. Somasekhar Your Promise has been Resolved".
+
+
+
+
+Summary of Execution Order
+1."Its already 9.00 PM" is logged immediately when getData() is called, as it’s synchronous.
+2.20 seconds later, resolve is called, which triggers the then callback and places it in the Microtask Queue.
+3.The then callback logs "Mr. Somasekhar Your Promise has been Resolved" once the promise is resolved and the Microtask Queue has priority.
+
+
+
+*Key Points to Remember
+->*** "then" callbacks only go to the Microtask Queue after the promise is resolved. They are registered but not scheduled until resolution.
+->*Microtask Queue is processed before the Callback Queue, so promise resolutions (then callbacks) have higher priority over regular asynchronous tasks like setTimeout callbacks.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+II.Now working with Promises with aync and await:************
+
+PROMISE:
+const SekharPromise =  new Promise(  (resolve,reject) => {
+    setTimeout(function {
+        resolve("Mr. Somasekhar Your Promise has been  Resolved with Async and await")                                  // this promise will resovled after 20 sec of calling the constructer 
+
+    },20000)
+})
+
+usin async and await:
+  async function handleSekharPromise()
+  {
+    const val=await SekharPromise ;
+    console.log(" Its 9:00PM already")
+    console.log(val)
+
+  }
+
+
+  calling:
+  handleSekharPromise()
+
+
+  output:1.Nothing is printed on console for 20sec
+         2.Its 9:00PM already
+         3.Mr. Somasekhar Your Promise has been  Resolved with Async and await .  * the last two logs printed at a time.
+
+
+
+*Q>why like that? 
+
+A>**After you calling the "handleSekharPromise()" function , because of the keyword "await" overthere , the JS waits there until the promise gets resovled , so acc to the promise to be resolved it has towait for 20 sec(timer for 20 sec).
+
+now the promise is resolved , so the JS engine executes "Its 9:00PM already" this  which is synchronous task, after  the controler movest to the next line
+
+Here the promie is already Resolved , it immediately prints the message "Somasekhar Your Promise has been  Resolved with Async and await" with same time .
+
+
+
+
+
+
+
+
+
+Deep level explanation:
+Step-by-Step Explanation with async/await:
+Execution Steps and Output Order
+    1.Promise Creation (SekharPromise)
+        SekharPromise is created as a new promise that will resolve after 20 seconds.
+        Inside the SekharPromise constructor, setTimeout is used to delay the execution of resolve("Mr. Somasekhar Your Promise has been Resolved with Async and await") for 20 seconds.
+
+
+    2.Calling handleSekharPromise()
+        The function handleSekharPromise() is called. Since it is defined as an async function, it will automatically return a promise that resolves once all code in the function has completed execution.
+        Inside handleSekharPromise(), we use await SekharPromise:
+            await pauses the execution of handleSekharPromise() until SekharPromise is resolved.
+            This means that any code after await SekharPromise (i.e., the console.log statements) will not execute until the promise resolves.
+
+    3.**Waiting for the Promise to Resolve (20 Seconds)
+        Since SekharPromise will take 20 seconds to resolve (due to setTimeout), the handleSekharPromise() function remains paused at the await line, and no output is printed to the console during this time.
+        Meanwhile, the rest of the program continues running, but here, there is no other synchronous code outside handleSekharPromise(), so the console remains empty for the 20-second delay.
+
+    4.Promise Resolution
+        after 20 seconds, the resolve function inside SekharPromise is called, passing the string "Mr. Somasekhar Your Promise has been Resolved with Async and await" as the resolved value.
+        At this point, SekharPromise is now resolved, and control returns back to handleSekharPromise() where await SekharPromise had paused execution.
+    
+    5.Continuation of handleSekharPromise()
+        With the promise resolved, the code after await SekharPromise resumes execution.
+        val now holds the resolved value of the promise, which is "Mr. Somasekhar Your Promise has been Resolved with Async and await".
+        The next lines, console.log("Its 9:00PM already") and console.log(val), are executed sequentially.
+
+    6.Final Output
+        "Its 9:00PM already" is printed to the console.
+        Immediately afterward, "Mr. Somasekhar Your Promise has been Resolved with Async and await" is printed to the console.
+
+
+
+Why Output Appears in This Order:
+    Initial Delay: The await SekharPromise line in handleSekharPromise() pauses the function execution until SekharPromise is resolved. So, no logs are printed immediately; there’s a 20-second wait before any output.
+
+   Synchronous Execution after Await: Once the promise resolves, the lines after await (i.e., console.log("Its 9:00PM already") and console.log(val)) execute immediately, one after the other, which is why they appear in close succession.
+
+
+
+How async/await Works Here:
+    Syntactic Sugar for Promises: async/await is simply syntactic sugar over the .then() syntax of promises. It makes asynchronous code appear more synchronous by allowing us to write await instead of chaining .then().
+    Pausing Execution with await: When await is encountered, JavaScript pauses the function at that line until the awaited promise resolves.
+
+
+
+
+**Comparison with .then() Syntax
+This is how the code would look if written using .then() instead of async/await:
+
+SekharPromise.then((val) => {
+    console.log("Its 9:00PM already");
+    console.log(val);
+});
+The .then() syntax performs the same operation. However, async/await can often make the code easier to read and manage, especially in cases of complex promise chains or multiple await statements.
+
+
+
+Summary
+1.SekharPromise starts with a 20-second delay before resolving.
+2.The await pauses handleSekharPromise() until SekharPromise resolves.
+3.After 20 seconds, the promise resolves, and the console.log statements are executed sequentially.
+4.Output order:
+    "Its 9:00PM already"
+    "Mr. Somasekhar Your Promise has been Resolved with Async and await"
+
+Using async/await provides a clearer and more linear way to handle asynchronous operations, especially for multiple sequential async tasks.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Q> what if you pleace somthing before await line?
+ async function handleSekharPromise()
+  {
+    console.log("Hello World ...!")
+    const val=await SekharPromise ;
+    console.log(" Its 9:00PM already")
+    console.log(val)
+
+  }
+
+
+
+
+  output:1.Heloo world ...! 
+         2.Nothing is printed on console for 20sec
+         3.Its 9:00PM already
+         4.Mr. Somasekhar Your Promise has been  Resolved with Async and await .  * the last two logs printed at a time.
+        
+
+
+
+
+Q>what is the output of this :
+
+     async function handleSekharPromise()
+  {
+    console.log("Hello World ...!")
+    const val=await SekharPromise ;
+    console.log(" Its 9:00PM already")
+    console.log(val)
+
+    const val2=await SekharPromise ;
+    console.log(" Its 10:00PM already")
+    console.log(val2)
+
+  }
+
+
+
+  output:1.Heloo world ...! 
+         2.Nothing is printed on console for 20sec
+         3.Its 9:00PM already
+         4.Mr. Somasekhar Your Promise has been  Resolved with Async and await .  {* the last 4 logs printed at a time.}
+         5.Its 10:00PM already
+         6.Mr. Somasekhar Your Promise has been  Resolved with Async and await .
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+what is the output:
+PROMISE 1:
+const SekharPromise =  new Promise(  (resolve,reject) => {
+    setTimeout(function {
+        resolve("Mr. Somasekhar Your Promise has been  Resolved with Async and await")                                  // this promise will resovled after 20 sec of calling the constructer 
+
+    },20000)  //20 sec
+})
+
+
+
+PROMISE 2:
+const RamPromise =  new Promise(  (resolve,reject) => {
+    setTimeout(function {
+        resolve("Mr. Ram Your Promise has been  Resolved with Async and await")                                  // this promise will resovled after 20 sec of calling the constructer 
+
+    },10000)  //sec
+})
+
+
+
+
+    async function handleSekharPromise()
+  {
+    console.log("Hello World ...!")
+    const val=await SekharPromise ;
+    console.log(" Its 9:00PM already")
+    console.log(val)
+
+    const val2=await RamPromise ;
+    console.log(" Its 10:00PM already")
+    console.log(val2)
+
+  }
+
+
+  output:
+  l.Hello World...! printed immediately
+  2.waits 20 sec ..
+  3.Its 9:00PM already
+  4.Mr. Somasekhar Your Promise has been  Resolved with Async and await .  {* the last 4 logs printed at a time.}
+  5.Its 10:00PM already
+  6.Mr. Ram Your Promise has been  Resolved with Async and await .
+
+*last 4 lines are printed at a time after waiting for 20sec  only , not for 30sec , why?
+because they statred parally at same time , even though Ram promise is finised first , it has to wait for Somasekhar promise has to be resolved .
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---------------------------->Real  Example----------------------------------:
+
+ 
+const url= "https://api.example.com/data/users/soma"
+
+
+async function handlePromise() {
+
+    try{
+        const data= await fetch (url)           //data fomrat is readStream so to use that converst into JSon 
+        const jsonvalue =await data.json()         //data.json() conversion is again a promise 
+        consol.log(jsonvalue)
+    }
+
+    catch (err) {
+        console.lg(err);
+    }
+
+}
+
+handlePromise()
+or 
+handlePromise().catch(err => console.log(err)) 
+
+
+output: data.... is fetched from the URL 
+
+
+
+
+
+
+****Purpose of json() Method
+The json() method is used to parse the response of the fetch request into JSON format. When we use fetch(url), it returns a Response object representing the HTTP response. The data.json() call is needed to extract the response body as a JSON object.
+    fetch(url): Fetches data from the specified URL and returns a promise that resolves to a Response object.
+    data.json(): Reads the response body and parses it as JSON, returning another promise that resolves to the parsed JSON object.
+
+
+
+Why Use await for data.json()
+When you call data.json(), it returns a promise because parsing large responses can be time-consuming. By using await data.json(), you’re telling JavaScript to wait until the parsing is complete before assigning the JSON object to jsonvalue.
+
+
+
+
+So in summary:
+First await (await fetch(url)): Waits for the network request to complete and for the Response object to become available.
+Second await (await data.json()): Waits for the json() method to parse the response body, which may take some time, especially for large JSON responses.
+
+
+
+
+
+

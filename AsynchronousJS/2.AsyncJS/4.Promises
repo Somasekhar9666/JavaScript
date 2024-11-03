@@ -1,76 +1,662 @@
-*Q>Why are They Called "Promises"? ******
+Before Learning about the promises , know about these: 
+  Callbacks and the Problems of Callback:
+      ->Understand how JavaScript used callbacks for async operations before promises were introduced.
+      ->Learn about callback hell and why it makes asynchronous code hard to read and maintain.
+
+
+
+*Role of Callbacks for Asynchronous Operations
+JavaScript is single-threaded, meaning it can only perform one operation at a time. To avoid blocking the main thread while waiting for time-consuming tasks, JavaScript handles asynchronous operations with non-blocking callbacks. Functions like setTimeout and AJAX requests often rely on this approach.
+
+Ex: 
+console.log("Start")
+
+console.log("JavaScript")
+
+console.log("End")
+
+---->"Time , Tide and JavaScript waits for None " so it will Print them immediately.
+Q> what if you want to print the "JavaScript" after some time like after 15sce ?
+It is like you need to wait for 15sec . so WARP  that in a  function hold for 15 sec somewhere  and CALL IT BACK after 15sec.
+
+    function (){ console.log("JavaScript")} 
+
+Now we can keep this function in a timer , for timer power, Broswer has the setTimeout webApi. this will take the function and time period for holding.
+after time out, it will trigger or call the function inside it . 
+
+Here we are Calling back that function . we have aechived the Asynchronous Functionality.
+
+*So using callbacks is a powerfull way to do Asynchronous operations in JS .
+we can take a piece of code and put it in function and execute it whenever we want (after some time or any point of time).
+****so callback plays a very important role in Asynchronous Operations.
+
+
+
+
+Ex2:
+consider there is CART for a e-commerce website. 
+coustmer added items to the cart : 
+
+   const CART =["shoes" , "pants" , "kurta"]
+
+there are two tasks in the proccess : 
+     1.Create order
+     2.payment
+
+so we have developed two APIs for them :
+    api.createOrder()  ---> to create the Order and biring the order summery
+    api.proceedToPayment() --> after getting the order summery need to make payment trascation.
+
+***there is a Dependency b/w the api's , proceedToPayment is depends on createOrder for order summery . so  the proceedToPayment has to wait until the response(order summery) returns.
+so this kind of  Asynchronous operation . so we can use the Callbacks for these .
+
+we can put the proceedToPayment in a function and use the function as call back , when ever the createOrder task is finished , the proceedToPayment is then triggred . 
+
+
+    function () {
+      api.proceedToPayment() ---> keeping the proceedToPayment in a function 
+    }
+
+   
+  api.createOrder(CART,function () {
+      api.proceedToPayment()   
+    })
+
+
+call back function placed inside the API , when JS executes , it will executes the createOrder . 
+**Now it the responsibilty of createOrder API to Create an order and Call the proceedToPayment function BACK
+
+Now we have to do another task , after the payment is done , we neeed to show the delivery status to the customer . 
+So we need to immediately call another developed API "api.deliveryStatus" after the proceedToPayment done.
+so again wrap the deliveryStatus inside  the function and pass that function to the proceedToPayment API.
+
+    function (){
+      api.deliveryStatus()
+    }
+
+
+api.createOrder(CART,function() {
+      api.proceedToPayment(functio (){
+              api.deliveryStatus()
+    })   
+
+  })
+
+
+Now the responsibilty of the proceedToPayment is to make the payment and also CALL the deliveryStatus function BACK.
+* this is how we manage the Dependency b/w the whole flow. 
+
+Q> what if again we need to update the Wallet?
+ so again a call back for the deliveryStatus to call it back 
+   
+
+   function (){
+    api.updateWallet()
+   }
+
+  
+  so the final is :
+    api.createOrder(CART,function() {
+
+      api.proceedToPayment(functio (){
+
+              api.deliveryStatus(function (){
+
+                  api.updateWallet()
+      })
+    })   
+  })
+
+
+PROBLEM 1.(when used callbacks): with all this lot of api's we can fall into one Hell call as CALLBACK HELL. 
+        ***Callback Hell:When multiple asynchronous tasks need to be done in sequence, using nested callbacks can quickly become challenging to read and maintain. This situation is often called callback hell or the pyramid of doom because the code structure grows wider and deeper with each additional async task.
+
+
+
+
+PROBLEM 2.(when used callbacks) : 
+        api.createOrder(CART,function () {
+      api.proceedToPayment()   
+    })
+  
+  In this snippet we are blundly trusting the createOrder api that it will call back the proceedToPayment once its created the order,  Don't you think it is Risky , 
+  **we are giving CONTROL of the Program(Code) to the createOrder API, 
+    the responsibilty of createOrder api is to calle the proceedToPayment api and we are blindly trusting the createOrder
+    what if the createOrder or fails, and the proceedToPayment API is not called , what if the proceedToPayment  API called twise ,
+    we don't know what is happening in the createOrder , how can we blindly trust it. 
+    This is called INVERSION OF CONTROL.
+
+
+INVERSION OF CONTROL: it is a design principle where control flow is reversed, allowing external frameworks or libraries to manage the execution of code. 
+Developer can not control the flow , code control the flow .
+
+
+      
+
+
+
+
+
+
+
+
+
+
+-----------------------------------------------------------------------------------------------------REAL PROMISES STARTS HERE----------------------------------------
+
+Q>What is Promise in General tems:
 In general terms, a promise is a commitment to provide a result in the future. Just as you may promise to deliver something at a later date, a JavaScript Promise is a "promise" that an operation will complete and provide a value (or error) at some later time.
 
 
-
-
-
-
-*Q>What is a Promise in JavaScript?
-In JavaScript:
+Q>What is a Promise in JavaScript?
 A Promise represents a value that may be available now, or in the future, or possibly never.
-It’s an object that acts as a placeholder for the result of an asynchronous operation.
-A Promise can have three states:
-    ->Pending: The initial state, where the operation hasn’t completed yet.
-    ->Fulfilled: The operation completed successfully, and the promise has a result.
-    ->Rejected: The operation failed, and the promise has an error.
+
+*It’s an object that acts as a placeholder for the result of an asynchronous operation.
+                             or 
+*A promise is an object that represents the eventual completion (or failure) of an asynchronous operation and its resulting value. It acts as a placeholder for a value that is not immediately available but will be resolved later.
+
+Promises in JavaScript are a way to handle asynchronous operations, allowing code to run in a non-blocking manner. They provide a cleaner, more manageable way to deal with operations that take time to complete, like loading data from a server or reading a file.
 
 
-
-*Promises in JavaScript are a way to handle asynchronous operations, allowing code to run in a non-blocking manner. They provide a cleaner, more manageable way to deal with operations that take time to complete, like loading data from a server or reading a file.
 
 
 Purpose of Promises in JavaScript
-Promises provide a more efficient and readable way to handle asynchronous tasks compared to callbacks. They:
-
+Promises provide a more efficient and readable way to handle asynchronous tasks compared to callbacks. 
+They:
     Simplify code by avoiding "callback hell," which happens when there are multiple nested callbacks.
+
+    Avoids the INVERSION OF FLOW-->it dont know wheather the previous call will become successful:
+          api.createOrder(CART,function () {
+                api.proceedToPayment()   
+          })
+
     Handle errors more gracefully, as errors can propagate through chained .then() and .catch() methods.
 
 
 
 
+A Promise can have three states:
+    ->Pending: The initial state, where the operation hasn’t completed yet.
+    ->Fulfilled: The operation completed successfully, and the promise has a result.
+    ->Rejected: The operation failed, and the promise has an error.
+
++---------+    resolve     +-------------+
+| Pending | ------------> | Fulfilled   | (Promise is resolved)
++---------+                | (Result: "Promise fulfilled!") |
+                          +-------------+
+                                |
+                                | reject
+                                v
+                          +-------------+
+                          | Rejected    | (Promise is rejected)
+                          +-------------+
+
+
+
+Important Note:A promise can only transition from Pending to either Fulfilled or Rejected once. After that, it remains in that state permanently. Any subsequent calls to resolve or reject will have no effect on the promise.
+
+
+
+Lifecycle of Promise(Object):
+1.Creation
+2.Pending
+3.Settled
+4.Handled
+
+
+
+Basic Syntax:
+let promise(object) = new Promise (
+                                                      (resolve, reject) =>  { // any Asynchronous operation that has to be done  (ex:setTimeout,fetching data or performing some time-consuming computation.)
+
+                                                                                  if (/* if the Async operation is success */)    {  resolve(result)   };       // When successful  (Fullfilled state)
+                                                                                  else {reject(error)};                                                         // When an error occurs or async operation fails (Reject)
+                                                                            } 
+                          );
+
+
+promise
+  .then((result) => {
+    console.log("Promise fulfilled with:", result);
+  })
+  .catch((error) => {
+    console.log("Promise rejected with:", error);
+  });  
+
+Explanation:
+1.Creation: The Promise is created and the executor function (the code inside new Promise((resolve, reject) => {...})) begins execution immediately.
+      ***Executor Function:The Executor Function is the function you pass into the Promise constructor. This function (often an anonymous function) takes two arguments, resolve and reject, which are used to mark the promise as fulfilled or rejected based on whether the operation inside is successful or encounters an error.
+
+2.Pending: The Promise remains in the "pending" state as long as the asynchronous operation has not completed.
+
+3.Settled: When the asynchronous operation completes, the Promise will either:
+    Fulfill: The resolve function is called, moving the Promise to the "fulfilled" state.
+    Reject: The reject function is called, moving the Promise to the "rejected" state.
+
+          if (success) {
+                  resolve("Data fetched successfully!"); // Move to Fulfilled state
+              } else {
+                  reject("Failed to fetch data."); // Move to Rejected state
+                }
+
+  *The Main purpose of above code snippet: it ensures that after the outcome of an asynchronous operation is determined, make sures  that the Promise moves to either the fulfilled or rejected state based on the outcome. This allows us to handle the result or error later in the .then() or .catch() blocks.
+
+  *Q>What if the Developer Forgets to Call resolve or reject(forgot to define the above snippet)?
+`       If the developer forgets to call either resolve or reject, the Promise will remain in the pending state indefinitely.
+          This means:
+              The Promise neither fulfills nor rejects, so it stays in a sort of "limbo."
+              The .then() and .catch() handlers attached to the Promise will never execute since the Promise’s state never changes to fulfilled or rejected.
+        
+
+4.Handled:After the Promise is fulfilled or rejected, any .then() or .catch() methods attached to the Promise are executed to handle the result.
+
+    myPromise
+  .then((result) => {
+    console.log("Fulfilled with:", result);
+  })
+  .catch((error) => {
+    console.error("Rejected with:", error);
+  });
 
 
 
 
-*1.Basic Syntax:
-
-let promise = new Promise(  (resolve, reject) => 
-  {
-    // Asynchronous operation
-    if (/* success */) 
-    {
-        resolve(result); // When successful
-    } 
-    else 
-    {
-        reject(error);   // When an error occurs
+Inseted of writing executor as a call back do with full function:
+   const promise =new Promise (
+    
+    function (resolve, reject) {
+       if (outcome==0){
+        const err = new Error("request is failed !")
+        reject(err)
+       }
+      else {
+        resolve(outcome)
+      }
     }
-  } 
-
-);
+   );
 
 
 
+-------------Best Examples:
+1.Example with Detailed Explanation:
+let promise = new Promise((resolve, reject) => {
 
+  // Executor function starts immediately when the promise is created
 
+  console.log("Starting async operation...");
 
-
-
-2. How Promises Work: Basic Example
-Here’s a simple promise to simulate a task that completes in 2 seconds.
-
-let myPromise = new Promise((resolve, reject) => {
   setTimeout(() => {
-    resolve("Task completed!");
-  }, 2000);
+    let isSuccess = true; // *Asume that the Async Operation is success and returned some date 
+
+    if (isSuccess) {
+      resolve("Operation was successful!"); // Resolves the promise if successful
+    } else {
+      reject("There was an error with the operation."); // Rejects the promise if unsuccessful
+    }
+  }, 10000); // Simulating an asynchronous operation with a timeout
 });
 
-myPromise.then((result) => {
-  console.log(result); // Output: Task completed!
+
+// Handling the resolved or rejected outcome of the promise
+promise
+  .then((result) => {
+    console.log("Promise resolved:", result);
+  })
+  .catch((error) => {
+    console.error("Promise rejected:", error);
+  });
+
+
+Explanation of Each Part
+1.Promise object Creation:
+    new Promise( (resolve, reject) => { ... } ) creates a promise object. The function inside, (resolve, reject) => { ... }, is the executor function, which runs right away.
+
+2.Executor Function:
+  Inside the executor, we simulate an asynchronous operation using setTimeout.
+After 10 seconds, isSuccess is checked.
+  If isSuccess is true, resolve("Operation was successful!") is called, fulfilling the promise.(Promise object goes to )
+  If isSuccess is false, reject("There was an error with the operation.") is called, rejecting the promise.
+
+3.Handling the Promise:
+  .then() is called if resolve is executed, passing the success message to result.
+  .catch() is called if reject is executed, passing the error message to error.
+
+
+
+
+*2.Real Life Example:
+function getUser(id) {
+  return new Promise((resolve, reject) => {
+    database.query(`SELECT * FROM users WHERE id = ?`, [id], (error, results) => {
+      if (error) {
+        reject("User not found");
+      } else {
+        resolve(results);
+      }
+    });
+  });
+}
+
+// Usage
+getUser(1)
+  .then(user => console.log("User data:", user))
+  .catch(error => console.error(error));
+
+
+1,Promise() --->construter is called for the creation of Promise Object
+
+2.
+(resolve, reject) => {
+    database.query(`SELECT * FROM users WHERE id = ?`, [id], (error, results) => {
+      if (error) {
+        reject("User not found");
+      } else {
+        resolve(results);
+      }})}
+
+ this is a excutor function called with Async operation database.query... ,
+
+it waits for outcome , and  the outcome goes to Promise object, 
+if the outcome is success  the promise object  will go to fulfill state or reject state from pending.
+later the promise is handlled.
+
+
+
+
+
+
+
+
+3.Real-Life Example: Fetching User Data
+Let’s say we want to simulate fetching user data:
+
+let fetchUserData = new Promise((resolve, reject) => {
+  console.log("Fetching user data...");
+
+  setTimeout(() => {
+    const user = { id: 1, name: "John Doe" }; // Sample user data
+    let isFetched = true; // Simulating fetch success or say fetch is success
+
+    if (isFetched) {
+      resolve(user); // Resolve with user data
+    } else {
+      reject("Failed to fetch user data"); // Reject if something went wrong
+    }
+  }, 20000); // Simulating a delay in fetching
+});
+
+fetchUserData
+  .then((user) => {
+    console.log("User data fetched:", user);
+  })
+  .catch((error) => {
+    console.error("Error fetching user data:", error);
+  });
+
+
+
+
+*Summary: a Promise is like a placeholder that just holds onto the final result once it's ready, letting you fetch it when needed. It leaves the decision of success or failure entirely up to the code inside it!
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Q>"resolve, reject "
+In the excutor function  , is two words are two functuions ? what are they, why we keeping success message in resolve and why we are keeping failure message in reject?
+A>Yes, in the context of a Promise in JavaScript, resolve and reject are indeed two functions provided to you as parameters of the executor function. Let’s break this down to understand their roles and purposes.
+
+What Are resolve and reject?
+  resolve: This function is called when the asynchronous operation is successful. When you call resolve(value), it transitions the Promise from the "pending" state to the "fulfilled" state, and the value you pass is the result of the successful operation.
+
+  reject: This function is called when the asynchronous operation fails. When you call reject(reason), it transitions the Promise from the "pending" state to the "rejected" state, and the reason you pass is typically an error message or object that explains why the operation failed.
+
+
+Why Use resolve for Success Messages?
+When an operation is completed successfully, you want to send back some information about that success. By using resolve, you provide the result of that successful operation so that it can be accessed later. The value passed to resolve becomes the argument to the .then() method of the Promise.
+const fetchData = new Promise((resolve, reject) => {
+  // Simulating an asynchronous operation
+  setTimeout(() => {
+    const data = { name: "Alice", age: 25 };
+    resolve(data); // Successful operation
+  }, 1000);
+});
+
+fetchData.then((result) => {
+  console.log("Data fetched:", result); // { name: "Alice", age: 25 }
 });
 
 
-  ->resolve is called after 2 seconds, meaning the promise is fulfilled, and "Task completed!" is logged.
+
+
+Why Use reject for Failure Messages?
+When something goes wrong during an operation, you want to notify the calling code about the error. By using reject, you provide a reason (often an error message or an Error object) that can be accessed later through the .catch() method. This helps in debugging and understanding what went wrong.
+
+const fetchData = new Promise((resolve, reject) => {
+  // Simulating a failed asynchronous operation
+  setTimeout(() => {
+    const error = "Failed to fetch data"; // Error message
+    reject(error); // Operation failed
+  }, 1000);
+});
+
+fetchData.catch((error) => {
+  console.error("Error fetching data:", error); // Failed to fetch data
+});
+
+
+
+Summary
+resolve(value): Call this function when the operation completes successfully. The value passed to resolve is what you want to return to the caller of the Promise.
+
+reject(reason): Call this function when the operation fails. The reason passed to reject is an explanation of the failure, which helps the caller understand what went wrong.
+
+
+
+
+
+
+
+*Summary:
+
+There are two types of Promises in JavaScript: manual (or custom) promises and automatic promises.
+
+Manual (or Custom) Promises: These are promises that we create ourselves using the Promise constructor. We can manually define the asynchronous operation and control the resolution or rejection of the promise. This is useful when you need a custom async process, like setting a timeout or performing custom calculations.
+
+Automatic Promises: These are promises that come from built-in functions (e.g., fetch). With these, the asynchronous operation and promise executor are predefined by JavaScript. You just call the function, and it automatically returns a promise that resolves or rejects based on the operation's outcome.
+
+Example of an Automatic Promise:
+The fetch function is an example of an automatic promise. When you use fetch, it automatically initiates a network request and returns a promise that resolves when the request completes successfully or rejects if there’s an error.
+
+
+
+
+
+****** Final example : Creating a own promise 
+
+const cart=['sheos' , 'pants' ,'kurtha']
+
+createOrder(cart)   // assume that i will retun the orderId 
+  .then( function (orderId){ console.log(orderId) return orderId } )
+  .catch (function () { console.log(err.message)})
+  .then (function () {  return proceedToPayment(orderId)})
+  .catch (function () { console.log(err.message)})
+
+
+
+
+
+function createOrder(cart){
+  const pr= new Promise(function (resolve , reject){
+
+    if(!validateCart(cart)){
+      const err= new Error("cart is not valid") // checking if cart is empty
+      reject(err)
+    }
+
+    const orderId="123425" // 
+    if(orderId){ setTimeout (function () {resolve(orderId)} , 100000)}; // what ever kept in the resolve it will goto then , so only order id will go 
+
+  })
+
+  retun pr  // returning the ptromise
+}
+
+
+
+
+function proceedToPayment (orderId) {
+  retun new Promise((resolve, reject) => {resolve("payment done")})
+}
+
+
+function validateCart(cart){
+  retun true
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+*Q>what are the diffrent aync operations that the promises can do?
+
+Promises in JavaScript are designed to handle various asynchronous operations. Below are some common types of asynchronous operations that can be effectively managed using Promises:
+
+
+1. Network Requests
+Promises are frequently used to handle HTTP requests, such as fetching data from APIs. The fetch API returns a Promise that resolves to the response of the request.
+fetch("https://jsonplaceholder.typicode.com/posts/1")
+  .then(response => response.json()) // Parse JSON data
+  .then(data => console.log(data)) // Use the data
+  .catch(error => console.error("Error fetching data:", error));
+
+
+
+
+2. File Operations
+In web applications, you may deal with file uploads or downloads. Using Promises can simplify the handling of file reading operations with the File API.
+function readFile(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result); // Resolve with file content
+    reader.onerror = () => reject("Error reading file."); // Reject on error
+    reader.readAsText(file); // Start reading file
+  });
+}
+
+// Usage
+readFile(selectedFile)
+  .then(content => console.log("File content:", content))
+  .catch(error => console.error(error));
+
+
+
+
+3. Timers
+Using setTimeout or setInterval can also be managed with Promises to create a delay or a repetitive task.
+
+Example:
+function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms)); // Wait for ms milliseconds
+}
+
+// Usage
+delay(2000).then(() => console.log("Executed after 2 seconds"));
+
+
+
+
+4. Database Operations
+When interacting with databases (especially in Node.js applications), operations such as querying can be wrapped in Promises, allowing for cleaner async handling.
+
+Example (using a fictional database library):
+function getUser(id) {
+  return new Promise((resolve, reject) => {
+    database.query(`SELECT * FROM users WHERE id = ?`, [id], (error, results) => {
+      if (error) {
+        reject("User not found");
+      } else {
+        resolve(results);
+      }
+    });
+  });
+}
+
+// Usage
+getUser(1)
+  .then(user => console.log("User data:", user))
+  .catch(error => console.error(error));
+
+
+
+5. Animation
+Promises can also be useful in managing animations, especially when dealing with CSS transitions or Web Animations API.
+
+Example:
+function animateElement(element) {
+  return new Promise((resolve) => {
+    element.style.transition = "opacity 2s";
+    element.style.opacity = 1; // Start animation
+    setTimeout(() => {
+      resolve("Animation completed"); // Resolve after animation
+    }, 2000); // Duration matches CSS
+  });
+}
+
+// Usage
+animateElement(myElement).then(message => console.log(message));
+
+
+
+
+6. Web Workers
+When performing heavy computations in the background using Web Workers, you can use Promises to handle the messages sent back from the worker.
+Example:
+function runWorker(workerScript) {
+  return new Promise((resolve, reject) => {
+    const worker = new Worker(workerScript);
+    worker.onmessage = (event) => resolve(event.data);
+    worker.onerror = (error) => reject("Worker error: " + error.message);
+  });
+}
+
+// Usage
+runWorker("worker.js")
+  .then(result => console.log("Worker result:", result))
+  .catch(error => console.error(error));
+
+
+
+
+
+
+
 
 
